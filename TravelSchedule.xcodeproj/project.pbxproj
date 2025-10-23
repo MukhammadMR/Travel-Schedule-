@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		28A292B92EAA3FF500AEDD3E /* openapi.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 28A292B82EAA3FF500AEDD3E /* openapi.yaml */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		2815D9CC2EA13FA100822087 /* TravelSchedule.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TravelSchedule.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		28A292B82EAA3FF500AEDD3E /* openapi.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = openapi.yaml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -34,6 +39,7 @@
 			children = (
 				2815D9CE2EA13FA100822087 /* TravelSchedule */,
 				2815D9CD2EA13FA100822087 /* Products */,
+				28A292B82EAA3FF500AEDD3E /* openapi.yaml */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28A292B92EAA3FF500AEDD3E /* openapi.yaml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
