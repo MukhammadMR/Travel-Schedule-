@@ -1,19 +1,6 @@
 import Foundation
 import Combine
 
-struct Filters {
-    var selectedSlots: Set<DepartureSlot> = []
-    var transfers: TransfersFilter = .no
-    var hasActiveFilters: Bool {
-        // Any selected time slots
-        if !selectedSlots.isEmpty { return true }
-
-        // Transfers filter active when user chooses "yes"
-        if transfers == .yes { return true }
-
-        return false
-    }
-}
 
 final class CarriersListViewModel: ObservableObject {
     // MARK: - Published State
@@ -252,55 +239,5 @@ final class CarriersListViewModel: ObservableObject {
             }
         }
         return false
-    }
-}
-
-// MARK: - Network DTOs
-
-struct SearchAPIError: Decodable {
-    let text: String?
-}
-
-struct SearchResponse: Decodable {
-    let segments: [Segment]?
-    let error: SearchAPIError?
-    let message: String?
-}
-
-struct Segment: Decodable {
-    let departure: String
-    let arrival: String
-    let duration: Int
-    let startDate: String
-    let thread: ThreadInfo
-
-    enum CodingKeys: String, CodingKey {
-        case departure
-        case arrival
-        case duration
-        case thread
-        case startDate = "start_date"
-    }
-}
-
-struct ThreadInfo: Decodable {
-    let uid: String?
-    let carrier: CarrierInfo?
-    let expressType: String?
-
-    enum CodingKeys: String, CodingKey {
-        case uid
-        case carrier
-        case expressType = "express_type"
-    }
-}
-
-struct CarrierInfo: Decodable {
-    let title: String
-    let logo: String?
-
-    enum CodingKeys: String, CodingKey {
-        case title
-        case logo
     }
 }

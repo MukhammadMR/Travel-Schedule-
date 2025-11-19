@@ -20,7 +20,6 @@ struct MainScreenView: View {
     @State private var selectedField: FieldType? = nil
     @State private var isCarriersPresented = false
     
-    // Моковые данные для сториз
     let stories: [Story] = [
         Story(id: "1", image: "storiesPreview1", title: "Text Text\nText Text\nText Text T..."),
         Story(id: "2", image: "storiesPreview2", title: "Text Text\nText Text\nText Text T..."),
@@ -72,9 +71,7 @@ struct MainScreenView: View {
             }
             
             Spacer()
-            
-            // NavigationLink for city list removed; replaced with .fullScreenCover below
-            
+                        
             NavigationLink("", isActive: $isCarriersPresented) {
                 CarriersListView(
                     fromTitle: fromCity,
@@ -272,5 +269,12 @@ struct TabBarButton: View {
                 .frame(width: 24, height: 24)
                 .foregroundColor(isSelected ? .primary : .secondary)
         }
+    }
+}
+
+
+#Preview("MainScreenView") {
+    NavigationStack {
+        MainScreenView()
     }
 }

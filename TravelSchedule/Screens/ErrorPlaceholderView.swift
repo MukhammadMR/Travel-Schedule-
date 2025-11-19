@@ -46,9 +46,15 @@ struct ErrorPlaceholderView: View {
     }
 }
 
-#Preview {
-    VStack {
-        ErrorPlaceholderView(type: .server)
-//        ErrorPlaceholderView(type: .noInternet)
-    }
+
+#Preview("Server Error") {
+    ErrorPlaceholderView(type: .server)
+        .padding()
+        .background(Color(.systemBackground))
+}
+
+#Preview("No Internet") {
+    ErrorPlaceholderView(type: .noInternet)
+        .padding()
+        .background(Color(.systemBackground))
 }

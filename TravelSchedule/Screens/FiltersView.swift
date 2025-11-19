@@ -32,12 +32,10 @@ struct FiltersView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            // заголовок
             Text("Время отправления")
                 .font(.system(size: 24, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            // чекбоксы времени
             VStack(spacing: 0) {
                 ForEach(DepartureSlot.allCases) { slot in
                     HStack {
@@ -62,7 +60,6 @@ struct FiltersView: View {
                 }
             }
 
-            // блок пересадок
             VStack(alignment: .leading, spacing: 16) {
                 Text("Показывать варианты с пересадками")
                     .font(.system(size: 24, weight: .bold))
@@ -122,5 +119,19 @@ struct FiltersView: View {
             }
         }
         .frame(height: 44)
+    }
+}
+
+#Preview("FiltersView") {
+    NavigationStack {
+        FiltersView(
+            filters: .constant(
+                Filters(
+                    selectedSlots: [.morning, .evening],
+                    transfers: .yes
+                )
+            ),
+            onApply: {}
+        )
     }
 }

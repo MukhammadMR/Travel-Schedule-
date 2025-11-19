@@ -79,3 +79,16 @@ struct StationListView: View {
         .navigationBarBackButtonHidden(true)
     }
 }
+
+#Preview("StationListView") {
+    NavigationStack {
+        StationListView(
+            stations: [
+                Station(code: "s1", title: "Ленинградский вокзал"),
+                Station(code: "s2", title: "Казанский вокзал"),
+                Station(code: "s3", title: "Курский вокзал")
+            ],
+            onSelect: { _ in }
+        )
+    }
+}

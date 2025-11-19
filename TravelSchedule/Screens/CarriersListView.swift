@@ -179,3 +179,19 @@ struct CarrierRowView: View {
         .cornerRadius(16)
     }
 }
+
+#Preview("CarrierCardView") {
+    CarrierCardView(
+        carrier: Carrier(
+            logo: "aeroflotLogo",
+            name: "Аэрофлот",
+            note: "Осталось 3 места",
+            date: "12 фев, чт",
+            departure: "10:30",
+            duration: "2 ч 15 мин",
+            arrival: "12:45"
+        )
+    )
+    .padding()
+    .background(Color(.systemBackground))
+}

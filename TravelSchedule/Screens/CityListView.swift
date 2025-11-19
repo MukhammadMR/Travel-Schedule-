@@ -192,3 +192,9 @@ private struct StationItem: Decodable {
         }
     }
 }
+
+#Preview("CityListView") {
+    NavigationStack {
+        CityListView(onSelect: { _ in })
+    }
+}
