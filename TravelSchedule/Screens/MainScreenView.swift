@@ -221,10 +221,11 @@ struct CustomTabBar: View {
     @Binding var selectedTab: Int
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            (colorScheme == .dark ? Color.black : Color.white)
-                .ignoresSafeArea(edges: .bottom)
-            
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(Color(.separator))
+                .frame(height: 0.5)
+
             HStack(spacing: 0) {
                 TabBarButton(
                     icon: "scheduleButton",
@@ -234,7 +235,7 @@ struct CustomTabBar: View {
                     selectedTab = 0
                 }
                 .frame(maxWidth: .infinity)
-                
+
                 TabBarButton(
                     icon: "settingsButton",
                     iconLight: "settingsButton",
@@ -245,10 +246,12 @@ struct CustomTabBar: View {
                 .frame(maxWidth: .infinity)
             }
             .padding(.horizontal, 40)
-            .padding(.top, 12)
+            .padding(.top, 11.25)
             .padding(.bottom, 4)
         }
-        .frame(height: 83)
+        .frame(maxWidth: .infinity)
+        .background(colorScheme == .dark ? Color.black : Color.white)
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 

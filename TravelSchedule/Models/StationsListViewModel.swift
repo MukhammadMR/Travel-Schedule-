@@ -1,77 +1,92 @@
 import Foundation
 import Combine
 
+// MARK: - State
+
+enum StationsListState {
+    case idle
+    case loading
+    case loaded(cities: [String], stationsByCity: [String: [Station]])
+    case error(AppErrorType)
+}
+
+// MARK: - ViewModel
+
+@MainActor
 final class StationsListViewModel: ObservableObject {
-    @Published var cities: [String] = []
-    @Published var stationsByCity: [String: [Station]] = [:]
-    @Published var isLoading = false
-    @Published var errorMessage: String?
-    @Published var appError: AppErrorType? = nil
+
+    // MARK: - Published
+
+    @Published var state: StationsListState = .idle
+
+    // MARK: - Dependencies
 
     private let service = StationsListService()
 
+    // MARK: - Public
+
     func load() {
-        guard !isLoading else { return }
-        isLoading = true
-        errorMessage = nil
-        appError = nil
+        if case .loading = state { return }
+        state = .loading
 
-        service.fetchStationsList { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .success(let data):
-                do {
-                    let decoded = try JSONDecoder().decode(StationsPayload.self, from: data)
-                    var map: [String: [Station]] = [:]
+        Task {
+            do {
+                let data = try await fetchStationsList()
+                let payload = try decodePayload(from: data)
+                let map = mapPayload(payload)
+                let sortedCities = map.keys.sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
 
-                    for country in decoded.countries {
-                        for region in country.regions {
-                            for settlement in region.settlements {
-                                let cityTitle = settlement.title
-                                let stations = settlement.stations.map {
-                                    Station(code: $0.code, title: $0.title)
-                                }
-                                if !stations.isEmpty {
-                                    map[cityTitle] = stations
-                                }
-                            }
-                        }
-                    }
+                state = .loaded(cities: sortedCities, stationsByCity: map)
+            } catch {
+                state = .error(mapError(error))
+            }
+        }
+    }
 
-                    DispatchQueue.main.async {
-                        self.stationsByCity = map
-                        self.cities = map.keys.sorted {
-                            $0.localizedCaseInsensitiveCompare($1) == .orderedAscending
-                        }
-                        self.isLoading = false
-                    }
-                } catch {
-                    DispatchQueue.main.async {
-                        self.errorMessage = error.localizedDescription
-                        self.appError = .server
-                        self.isLoading = false
-                    }
-                }
+    // MARK: - Private Async Wrapper
 
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    self.errorMessage = error.localizedDescription
-
-                    if let urlError = error as? URLError {
-                        switch urlError.code {
-                        case .notConnectedToInternet, .networkConnectionLost:
-                            self.appError = .noInternet
-                        default:
-                            self.appError = .server
-                        }
-                    } else {
-                        self.appError = .server
-                    }
-
-                    self.isLoading = false
+    private func fetchStationsList() async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            service.fetchStationsList { result in
+                switch result {
+                case .success(let data): continuation.resume(returning: data)
+                case .failure(let error): continuation.resume(throwing: error)
                 }
             }
         }
+    }
+
+    // MARK: - Helpers
+
+    private func decodePayload(from data: Data) throws -> StationsPayload {
+        try JSONDecoder().decode(StationsPayload.self, from: data)
+    }
+
+    private func mapPayload(_ payload: StationsPayload) -> [String: [Station]] {
+        var result: [String: [Station]] = [:]
+
+        for country in payload.countries {
+            for region in country.regions {
+                for settlement in region.settlements {
+                    let stations = settlement.stations.map { Station(code: $0.code, title: $0.title) }
+                    if !stations.isEmpty {
+                        result[settlement.title] = stations
+                    }
+                }
+            }
+        }
+
+        return result
+    }
+
+    private func mapError(_ error: Error) -> AppErrorType {
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet, .networkConnectionLost: return .noInternet
+            default: return .server
+            }
+        }
+        return .server
     }
 }
 
