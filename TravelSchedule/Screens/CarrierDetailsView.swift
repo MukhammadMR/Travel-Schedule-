@@ -27,9 +27,6 @@ struct CarrierDetailsView: View {
                 }
             }
         }
-        .task {
-            await viewModel.load()
-        }
     }
 
     @ViewBuilder
@@ -37,11 +34,8 @@ struct CarrierDetailsView: View {
         if let details = viewModel.details {
             header(details: details)
             contactSection(details: details)
-        } else if viewModel.isLoading {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        } else if let message = viewModel.errorMessage {
-            Text(message)
+        } else {
+            Text("Нет данных о перевозчике")
                 .foregroundColor(.secondary)
         }
     }
