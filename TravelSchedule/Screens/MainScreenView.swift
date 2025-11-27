@@ -40,47 +40,53 @@ struct MainScreenView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-            StoriesGroupView(stories: stories)
-                .padding(.top, 44)
-                .padding(.horizontal, 16)
-            
-            ChoosingDirectionView(
-                fromCity: $fromCity,
-                toCity: $toCity,
-                onSelectField: { field in
-                    selectedField = field
-                    isCityListPresented = true
-                },
-                onSwap: swapDirections
-            )
-            .padding(.top, 44)
-            .padding(.horizontal, 16)
-
-            if isSearchEnabled {
-                Button(action: {
-                    isCarriersPresented = true
-                }) {
-                    Text("Найти")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(width: 150, height: 60)
-                        .background(Color(#colorLiteral(red: 0.2156862745, green: 0.4470588235, blue: 0.9058823529, alpha: 1)))
-                        .cornerRadius(16)
-                }
-                .padding(.top, 20)
-            }
-            
-            Spacer()
+                if selectedTab == 0 {
+                    VStack(spacing: 0) {
+                        StoriesGroupView(stories: stories)
+                            .padding(.top, 44)
+                            .padding(.horizontal, 16)
                         
-            NavigationLink("", isActive: $isCarriersPresented) {
-                CarriersListView(
-                    fromTitle: fromCity,
-                    toTitle: toCity,
-                    fromCode: fromCode,
-                    toCode: toCode
-                )
-            }
-            .hidden()
+                        ChoosingDirectionView(
+                            fromCity: $fromCity,
+                            toCity: $toCity,
+                            onSelectField: { field in
+                                selectedField = field
+                                isCityListPresented = true
+                            },
+                            onSwap: swapDirections
+                        )
+                        .padding(.top, 44)
+                        .padding(.horizontal, 16)
+
+                        if isSearchEnabled {
+                            Button(action: {
+                                isCarriersPresented = true
+                            }) {
+                                Text("Найти")
+                                    .font(.system(size: 17, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .frame(width: 150, height: 60)
+                                    .background(Color(#colorLiteral(red: 0.2156862745, green: 0.4470588235, blue: 0.9058823529, alpha: 1)))
+                                    .cornerRadius(16)
+                            }
+                            .padding(.top, 20)
+                        }
+                        
+                        Spacer()
+                                    
+                        NavigationLink("", isActive: $isCarriersPresented) {
+                            CarriersListView(
+                                fromTitle: fromCity,
+                                toTitle: toCity,
+                                fromCode: fromCode,
+                                toCode: toCode
+                            )
+                        }
+                        .hidden()
+                    }
+                } else if selectedTab == 1 {
+                    SettingsView()
+                }
             }
             .safeAreaInset(edge: .bottom) {
                 CustomTabBar(selectedTab: $selectedTab)

@@ -108,7 +108,17 @@ struct CarrierDetailsView: View {
 #Preview {
     NavigationStack {
         CarrierDetailsView(
-            viewModel: CarrierDetailsViewModel(carrierId: "demo")
+            viewModel: CarrierDetailsViewModel(
+                carrierId: "129",
+                initialInfo: CarrierInfo(
+                    title: "Тверской Экспресс",
+                    logo: nil,
+                    email: "info@example.com",
+                    phone: "+7 (800) 775-00-00",
+                    url: "https://www.example.com",
+                    code: "129"
+                )
+            )
         )
     }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct TravelScheduleApp: App {
     @StateObject private var launch = AppLaunchState()
+    @AppStorage("isDarkMode") private var isDarkMode = false
 
     var body: some Scene {
         WindowGroup {
@@ -16,14 +17,13 @@ struct TravelScheduleApp: App {
                         .ignoresSafeArea()
                         .transition(.opacity)
                         .onAppear {
-                            // минимальная длительность показа
                             launch.start(minimumDuration: 0.8)
-                            // имитация первой загрузки данных:
                             preload()
                         }
                 }
             }
             .background(Color(.systemBackground)).ignoresSafeArea()
+            .preferredColorScheme(isDarkMode ? .dark : .light)
         }
     }
 
