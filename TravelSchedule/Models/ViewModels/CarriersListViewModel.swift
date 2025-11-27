@@ -66,14 +66,29 @@ final class CarriersListViewModel: ObservableObject {
                 }
 
                 let mapped = segments.map { segment in
-                    Carrier(
-                        logo: segment.thread.carrier?.logo ?? "",
-                        name: segment.thread.carrier?.title ?? "Неизвестно",
+                    let carrierDTO = segment.thread.carrier
+
+                    let initialInfo: CarrierInfo? = carrierDTO.map { dto in
+                        CarrierInfo(
+                            title: dto.title ?? "Неизвестно",
+                            logo: dto.logo,
+                            email: dto.email,
+                            phone: dto.phone ?? "",
+                            url: dto.url,
+                            code: dto.code ?? ""
+                        )
+                    }
+
+                    return Carrier(
+                        carrierId: carrierDTO?.code ?? "",
+                        logo: carrierDTO?.logo ?? "",
+                        name: carrierDTO?.title ?? "Неизвестно",
                         note: segment.thread.expressType,
                         date: Self.formatDate(segment.startDate),
                         departure: Self.formatTime(segment.departure),
                         duration: Self.formatDuration(segment.duration),
-                        arrival: Self.formatTime(segment.arrival)
+                        arrival: Self.formatTime(segment.arrival),
+                        initialInfo: initialInfo
                     )
                 }
 

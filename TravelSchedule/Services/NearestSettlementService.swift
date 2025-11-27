@@ -1,5 +1,5 @@
-
 import Foundation
+import Combine
 
 final class NearestSettlementService {
     private let baseURL = "https://api.rasp.yandex.net/v3.0/nearest_settlement/"
