@@ -2,8 +2,7 @@ import SwiftUI
 
 enum FieldType { case from, to }
 
-// MARK: - Story Model
-struct Story: Identifiable {
+struct StoryPreview: Identifiable {
     let id: String
     let image: String
     let title: String
@@ -19,13 +18,19 @@ struct MainScreenView: View {
     @State private var isCityListPresented = false
     @State private var selectedField: FieldType? = nil
     @State private var isCarriersPresented = false
+    @State private var isStoryPresented = false
+    @State private var selectedStoryIndex: Int = 0
     
-    let stories: [Story] = [
-        Story(id: "1", image: "storiesPreview1", title: "Text Text\nText Text\nText Text T..."),
-        Story(id: "2", image: "storiesPreview2", title: "Text Text\nText Text\nText Text T..."),
-        Story(id: "3", image: "storiesPreview3", title: "Text Text\nText Text\nText Text T..."),
-        Story(id: "4", image: "storiesPreview4", title: "Text Text\nText Text\nText Text T..."),
-        Story(id: "5", image: "storiesPreview5", title: "Text Text\nText Text\nText Text T..."),
+    let stories: [StoryPreview] = [
+        StoryPreview(id: "1", image: "storiesPreview1", title: "Text Text\nText Text\nText Text T..."),
+        StoryPreview(id: "2", image: "storiesPreview2", title: "Text Text\nText Text\nText Text T..."),
+        StoryPreview(id: "3", image: "storiesPreview3", title: "Text Text\nText Text\nText Text T..."),
+        StoryPreview(id: "4", image: "storiesPreview4", title: "Text Text\nText Text\nText Text T..."),
+        StoryPreview(id: "5", image: "storiesPreview5", title: "Text Text\nText Text\nText Text T..."),
+        StoryPreview(id: "6", image: "storiesPreview6", title: "Text Text\nText Text\nText Text T..."),
+        StoryPreview(id: "7", image: "storiesPreview7", title: "Text Text\nText Text\nText Text T..."),
+        StoryPreview(id: "8", image: "storiesPreview8", title: "Text Text\nText Text\nText Text T..."),
+        StoryPreview(id: "9", image: "storiesPreview9", title: "Text Text\nText Text\nText Text T...")
     ]
     
     private var isSearchEnabled: Bool {
@@ -42,7 +47,10 @@ struct MainScreenView: View {
             VStack(spacing: 0) {
                 if selectedTab == 0 {
                     VStack(spacing: 0) {
-                        StoriesGroupView(stories: stories)
+                        StoriesGroupView(stories: stories) { index in
+                            selectedStoryIndex = index
+                            isStoryPresented = true
+                        }
                             .padding(.top, 44)
                             .padding(.horizontal, 16)
                         
@@ -92,6 +100,12 @@ struct MainScreenView: View {
                 CustomTabBar(selectedTab: $selectedTab)
             }
             .background(Color(.systemBackground))
+            .fullScreenCover(isPresented: $isStoryPresented) {
+                if !fullScreenStories.isEmpty {
+                    let startIndex = min(selectedStoryIndex * 2, fullScreenStories.count - 1)
+                    StoryView(story: fullScreenStories[startIndex])
+                }
+            }
             .fullScreenCover(isPresented: $isCityListPresented) {
                 NavigationStack {
                     CityListView { selected in
@@ -113,13 +127,17 @@ struct MainScreenView: View {
 
 // MARK: - Stories Group View
 struct StoriesGroupView: View {
-    let stories: [Story]
+    let stories: [StoryPreview]
+    let onStoryTap: (Int) -> Void
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(stories) { story in
+                ForEach(Array(stories.enumerated()), id: \.element.id) { index, story in
                     StoryCardView(story: story)
+                        .onTapGesture {
+                            onStoryTap(index)
+                        }
                 }
             }
             .padding(.horizontal, 16)
@@ -131,7 +149,7 @@ struct StoriesGroupView: View {
 
 // MARK: - Story Card View
 struct StoryCardView: View {
-    let story: Story
+    let story: StoryPreview
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
