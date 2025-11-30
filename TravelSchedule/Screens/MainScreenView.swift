@@ -20,7 +20,8 @@ struct MainScreenView: View {
     @State private var isCarriersPresented = false
     @State private var isStoryPresented = false
     @State private var selectedStoryIndex: Int = 0
-    
+    @State private var viewedStories: Set<String> = []
+
     let stories: [StoryPreview] = [
         StoryPreview(id: "1", image: "storiesPreview1", title: "Text Text\nText Text\nText Text T..."),
         StoryPreview(id: "2", image: "storiesPreview2", title: "Text Text\nText Text\nText Text T..."),
@@ -47,12 +48,13 @@ struct MainScreenView: View {
             VStack(spacing: 0) {
                 if selectedTab == 0 {
                     VStack(spacing: 0) {
-                        StoriesGroupView(stories: stories) { index in
+                        StoriesGroupView(stories: stories, viewedStories: viewedStories) { index in
+                            viewedStories.insert(stories[index].id)
                             selectedStoryIndex = index
                             isStoryPresented = true
                         }
-                            .padding(.top, 44)
-                            .padding(.horizontal, 16)
+                        .padding(.top, 44)
+                        .padding(.horizontal, 16)
                         
                         ChoosingDirectionView(
                             fromCity: $fromCity,
@@ -128,13 +130,15 @@ struct MainScreenView: View {
 // MARK: - Stories Group View
 struct StoriesGroupView: View {
     let stories: [StoryPreview]
+    let viewedStories: Set<String>
     let onStoryTap: (Int) -> Void
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 ForEach(Array(stories.enumerated()), id: \.element.id) { index, story in
-                    StoryCardView(story: story)
+                    let isViewed = viewedStories.contains(story.id)
+                    StoryCardView(story: story, isViewed: isViewed)
                         .onTapGesture {
                             onStoryTap(index)
                         }
@@ -150,6 +154,7 @@ struct StoriesGroupView: View {
 // MARK: - Story Card View
 struct StoryCardView: View {
     let story: StoryPreview
+    let isViewed: Bool
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -159,6 +164,7 @@ struct StoryCardView: View {
                 .frame(width: 92, height: 140)
                 .clipped()
                 .cornerRadius(16)
+                .opacity(isViewed ? 0.4 : 1.0)
             
             Text(story.title)
                 .font(.system(size: 12, weight: .regular))
@@ -169,7 +175,7 @@ struct StoryCardView: View {
         .frame(width: 92, height: 140)
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.accentColor, lineWidth: 4)
+                .stroke(isViewed ? Color.clear : Color.accentColor, lineWidth: 4)
         )
     }
 }
