@@ -3,13 +3,17 @@ import SwiftUI
 struct StoryView: View {
     let stories: [Story]
     @State private var currentIndex: Int
-
-    private static let storyDuration: TimeInterval = 10
     @State private var timer: Timer?
-
     @State private var progress: CGFloat = 0
 
     @Environment(\.dismiss) private var dismiss
+
+    private static let storyDuration: TimeInterval = 10
+
+    init(story: Story, stories: [Story] = fullScreenStories) {
+        self.stories = stories
+        _currentIndex = State(initialValue: story.index)
+    }
 
     private var currentStory: Story {
         stories[currentIndex]
@@ -135,67 +139,6 @@ struct StoryView: View {
         }
         currentIndex -= 1
         startTimer()
-    }
-
-    init(story: Story, stories: [Story] = fullScreenStories) {
-        self.stories = stories
-        _currentIndex = State(initialValue: story.index)
-    }
-}
-
-struct StoryProgressBar: View {
-    let progress: CGFloat
-
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(Color.white.opacity(0.3))
-                Capsule()
-                    .fill(Color.white)
-                    .frame(width: geometry.size.width * max(0, min(progress, 1)))
-            }
-        }
-        .frame(height: 6)
-    }
-}
-
-struct StoryProgressBars: View {
-    let segmentCount: Int
-    let currentIndex: Int
-    let progress: CGFloat
-
-    private func progressValue(for index: Int) -> CGFloat {
-        if index < currentIndex { return 1 }
-        if index == currentIndex { return progress }
-        return 0
-    }
-
-    var body: some View {
-        HStack(spacing: 4) {
-            ForEach(0 ..< segmentCount, id: \.self) { index in
-                StoryProgressBar(progress: progressValue(for: index))
-            }
-        }
-    }
-}
-
-struct CloseButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            ZStack {
-                Circle()
-                    .fill(Color.black.opacity(0.6))
-                    .frame(width: 40, height: 40)
-                Image(systemName: "xmark")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(.white)
-            }
-        }
     }
 }
 
