@@ -2,6 +2,7 @@ import SwiftUI
 
 struct Carrier: Identifiable {
     let id = UUID()
+    let carrierId: String
     let logo: String
     let name: String
     let note: String?
@@ -9,6 +10,7 @@ struct Carrier: Identifiable {
     let departure: String
     let duration: String
     let arrival: String
+    let initialInfo: CarrierInfo?
 }
 
 struct CarriersListView: View {
@@ -51,7 +53,16 @@ struct CarriersListView: View {
                         } else {
                             VStack(spacing: 12) {
                                 ForEach(viewModel.carriers) { carrier in
-                                    CarrierCardView(carrier: carrier)
+                                    NavigationLink {
+                                        CarrierDetailsView(
+                                            viewModel: CarrierDetailsViewModel(
+                                                carrierId: carrier.carrierId,
+                                                initialInfo: carrier.initialInfo
+                                            )
+                                        )
+                                    } label: {
+                                        CarrierCardView(carrier: carrier)
+                                    }
                                 }
                             }
                             .padding(.horizontal, 16)
@@ -183,13 +194,15 @@ struct CarrierRowView: View {
 #Preview("CarrierCardView") {
     CarrierCardView(
         carrier: Carrier(
+            carrierId: "demo",
             logo: "aeroflotLogo",
             name: "Аэрофлот",
             note: "Осталось 3 места",
             date: "12 фев, чт",
             departure: "10:30",
             duration: "2 ч 15 мин",
-            arrival: "12:45"
+            arrival: "12:45",
+            initialInfo: nil
         )
     )
     .padding()
