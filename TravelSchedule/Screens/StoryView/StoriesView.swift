@@ -1,22 +1,21 @@
 import SwiftUI
 
 struct StoryView: View {
-    let stories: [Story]
-    @State private var currentIndex: Int
-    @State private var timer: Timer?
-    @State private var progress: CGFloat = 0
+    @StateObject private var viewModel: StoryViewModel
 
     @Environment(\.dismiss) private var dismiss
 
-    private static let storyDuration: TimeInterval = 10
-
     init(story: Story, stories: [Story] = fullScreenStories) {
-        self.stories = stories
-        _currentIndex = State(initialValue: story.index)
+        _viewModel = StateObject(
+            wrappedValue: StoryViewModel(
+                startIndex: story.index,
+                stories: stories
+            )
+        )
     }
 
     private var currentStory: Story {
-        stories[currentIndex]
+        viewModel.stories[viewModel.currentIndex]
     }
 
     var body: some View {
@@ -29,9 +28,9 @@ struct StoryView: View {
 
             VStack {
                 StoryProgressBars(
-                    segmentCount: stories.count,
-                    currentIndex: currentIndex,
-                    progress: progress
+                    segmentCount: viewModel.stories.count,
+                    currentIndex: viewModel.currentIndex,
+                    progress: viewModel.progress
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
@@ -61,12 +60,12 @@ struct StoryView: View {
                 Color.clear
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        showPreviousStory()
+                        viewModel.showPreviousStory()
                     }
                 Color.clear
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        showNextStoryOrDismiss()
+                        viewModel.showNextStoryOrFinish()
                     }
             }
         }
@@ -84,64 +83,31 @@ struct StoryView: View {
                     if value.translation.height > 50 {
                         dismissWithCleanup()
                     } else if value.translation.width < -50 {
-                        showNextStoryOrDismiss()
+                        viewModel.showNextStoryOrFinish()
                     } else if value.translation.width > 50 {
-                        showPreviousStory()
+                        viewModel.showPreviousStory()
                     }
                 }
         )
         .onAppear {
-            startTimer()
+            let dismiss = dismiss
+            viewModel.onStoriesFinished = { [weak viewModel] in
+                viewModel?.invalidateTimer()
+                dismiss()
+            }
+            viewModel.startTimer()
         }
         .onDisappear {
-            invalidateTimer()
+            viewModel.invalidateTimer()
         }
-        .animation(.easeInOut, value: currentIndex)
-    }
-
-    private func startTimer() {
-        invalidateTimer()
-        progress = 0
-        timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
-            let step = 0.05 / Self.storyDuration
-            progress += step
-            if progress >= 1 {
-                timer.invalidate()
-                showNextStoryOrDismiss()
-            }
-        }
-    }
-
-    private func invalidateTimer() {
-        timer?.invalidate()
-        timer = nil
+        .animation(.easeInOut, value: viewModel.currentIndex)
     }
 
     private func dismissWithCleanup() {
-        invalidateTimer()
+        viewModel.invalidateTimer()
         dismiss()
     }
-
-    private func showNextStoryOrDismiss() {
-        if currentIndex < stories.count - 1 {
-            currentIndex += 1
-            startTimer()
-        } else {
-            dismissWithCleanup()
-        }
-    }
-
-    private func showPreviousStory() {
-        guard currentIndex > 0 else {
-            progress = 0
-            startTimer()
-            return
-        }
-        currentIndex -= 1
-        startTimer()
-    }
 }
-
 
 #Preview {
     StoryView(story: fullScreenStories[0])
