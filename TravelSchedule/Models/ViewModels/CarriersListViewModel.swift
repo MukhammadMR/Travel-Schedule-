@@ -1,7 +1,6 @@
 import Foundation
 import Combine
 
-
 final class CarriersListViewModel: ObservableObject {
     // MARK: - Published State
     @Published var isLoading: Bool = false
@@ -16,6 +15,15 @@ final class CarriersListViewModel: ObservableObject {
 
     private var allCarriers: [Carrier] = []
 
+    // MARK: - Lifecycle
+    func onAppear(from fromStation: String, to toStation: String) async {
+
+        if !carriers.isEmpty || isLoading {
+            return
+        }
+        await loadCarriers(from: fromStation, to: toStation)
+    }
+
     // MARK: - Public API
     func loadCarriers(from fromStation: String, to toStation: String) async {
         await MainActor.run {
@@ -26,16 +34,7 @@ final class CarriersListViewModel: ObservableObject {
 
         let service = SearchService()
         do {
-            let data = try await withCheckedThrowingContinuation { continuation in
-                service.fetchSearch(from: fromStation, to: toStation) { result in
-                    switch result {
-                    case .success(let data):
-                        continuation.resume(returning: data)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
+            let data = try await service.fetchSearch(from: fromStation, to: toStation)
 
             #if DEBUG
             if let jsonString = String(data: data, encoding: .utf8) {

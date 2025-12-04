@@ -1,5 +1,5 @@
 import Foundation
 
-struct SearchAPIError: Decodable {
+struct SearchAPIError: Decodable, Sendable {
     let text: String?
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-struct ThreadInfo: Decodable {
+struct ThreadInfo: Decodable, Sendable {
     let uid: String?
     let carrier: CarrierInfo?
     let expressType: String?

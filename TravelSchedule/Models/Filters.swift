@@ -1,6 +1,6 @@
 import Foundation
 
-struct Filters {
+struct Filters: Sendable {
     var selectedSlots: Set<DepartureSlot> = []
     var transfers: TransfersFilter = .no
 

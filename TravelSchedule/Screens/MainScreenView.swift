@@ -78,6 +78,9 @@ struct MainScreenView: View {
                 }
             }
             .ignoresSafeArea(edges: .top)
+            .task {
+                await viewModel.onAppear()
+            }
         }
     }
 }

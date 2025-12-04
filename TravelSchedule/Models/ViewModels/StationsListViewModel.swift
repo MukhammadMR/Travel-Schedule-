@@ -46,14 +46,7 @@ final class StationsListViewModel: ObservableObject {
     // MARK: - Private Async Wrapper
 
     private func fetchStationsList() async throws -> Data {
-        try await withCheckedThrowingContinuation { continuation in
-            service.fetchStationsList { result in
-                switch result {
-                case .success(let data): continuation.resume(returning: data)
-                case .failure(let error): continuation.resume(throwing: error)
-                }
-            }
-        }
+        try await service.fetchStationsList()
     }
 
     // MARK: - Helpers
