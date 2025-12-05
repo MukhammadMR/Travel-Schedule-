@@ -17,23 +17,19 @@ final class CityListViewModel: ObservableObject {
     // MARK: - Private
 
     private var debounceWorkItem: DispatchWorkItem?
-
-    let cities = [
-        "Москва",
-        "Санкт-Петербург",
-        "Сочи",
-        "Горных воздух",
-        "Краснодар",
-        "Казань",
-        "Омск"
-    ]
+    private let decoder = JSONDecoder()
 
     // MARK: - Computed
 
+    var cities: [String] {
+        stationsByCity.keys.sorted()
+    }
+
     var filteredCities: [String] {
         let trimmedQuery = debouncedQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmedQuery.isEmpty { return cities }
-        return cities.filter { $0.localizedCaseInsensitiveContains(trimmedQuery) }
+        return trimmedQuery.isEmpty
+        ? cities
+        : cities.filter { $0.localizedCaseInsensitiveContains(trimmedQuery) }
     }
 
     // MARK: - Lifecycle
@@ -75,10 +71,10 @@ final class CityListViewModel: ObservableObject {
 
         do {
             let data = try await service.fetchStationsList()
-            let decoded = try JSONDecoder().decode(StationsListPayload.self, from: data)
+            let decoded = try decoder.decode(StationsListPayload.self, from: data)
 
             var map: [String: [Station]] = [:]
-            for country in decoded.countries {
+            for country in decoded.countries where country.title == "Россия" {
                 for region in country.regions {
                     for settlement in region.settlements {
                         let cityTitle = settlement.title
@@ -111,6 +107,7 @@ private struct StationsListPayload: Decodable {
 }
 
 private struct Country: Decodable {
+    let title: String
     let regions: [Region]
 }
 

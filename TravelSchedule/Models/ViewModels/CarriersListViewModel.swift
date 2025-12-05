@@ -18,7 +18,7 @@ final class CarriersListViewModel: ObservableObject {
     // MARK: - Lifecycle
     func onAppear(from fromStation: String, to toStation: String) async {
 
-        if !carriers.isEmpty || isLoading {
+        guard carriers.isEmpty, !isLoading else {
             return
         }
         await loadCarriers(from: fromStation, to: toStation)

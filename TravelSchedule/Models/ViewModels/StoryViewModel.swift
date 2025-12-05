@@ -9,7 +9,7 @@ final class StoryViewModel: ObservableObject {
     let stories: [Story]
 
     private var timer: Timer?
-    private static let storyDuration: TimeInterval = 10
+    nonisolated private static let storyDuration: TimeInterval = 10
     var onStoriesFinished: (() -> Void)?
 
     init(startIndex: Int, stories: [Story]) {
@@ -32,7 +32,9 @@ final class StoryViewModel: ObservableObject {
 
             if self.progress >= 1 {
                 timer.invalidate()
-                self.showNextStoryOrFinish()
+                Task { @MainActor in
+                    self.showNextStoryOrFinish()
+                }
             }
         }
     }

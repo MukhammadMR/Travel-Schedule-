@@ -5,7 +5,9 @@ actor SearchService {
     private let apiKey = "d9ed364d-0959-41b6-8875-e23bc0375f5b"
 
     func fetchSearch(from: String, to: String) async throws -> Data {
-        var components = URLComponents(string: baseURL)!
+        guard var components = URLComponents(string: baseURL) else {
+            throw URLError(.badURL)
+        }
         components.queryItems = [
             URLQueryItem(name: "apikey", value: apiKey),
             URLQueryItem(name: "from", value: from),

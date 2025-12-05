@@ -56,7 +56,4 @@ final class MainScreenViewModel: ObservableObject {
 
         isCityListPresented = false
     }
-
-    func onAppear() async {
-    }
 }

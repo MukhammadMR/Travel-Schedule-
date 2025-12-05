@@ -25,7 +25,7 @@ struct CityListView: View {
                 .frame(maxWidth: 343)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 13)
-                .onChange(of: viewModel.query) { newValue in
+                .onChange(of: viewModel.query) { newValue, _ in
                     viewModel.onQueryChange(newValue)
                 }
             

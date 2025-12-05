@@ -14,6 +14,10 @@ actor CopyrightService {
     private let baseURL = "https://api.rasp.yandex.net/v3.0/copyright/"
     private let apiKey = "d9ed364d-0959-41b6-8875-e23bc0375f5b"
 
+    static func fetchCopyright() async throws -> CopyrightResponse.Copyright {
+        try await CopyrightService().fetchCopyright()
+    }
+
     func fetchCopyright() async throws -> CopyrightResponse.Copyright {
         guard var components = URLComponents(string: baseURL) else {
             throw URLError(.badURL)
