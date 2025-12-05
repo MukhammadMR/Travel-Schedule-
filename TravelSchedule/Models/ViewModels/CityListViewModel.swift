@@ -79,9 +79,21 @@ final class CityListViewModel: ObservableObject {
                     for settlement in region.settlements {
                         let cityTitle = settlement.title
                         let items = (settlement.stations ?? []).compactMap { item -> Station? in
-                            guard let code = item.codes?.yandexCode, !code.isEmpty else {
+                            guard
+                                let code = item.codes?.yandexCode,
+                                !code.isEmpty
+                            else {
                                 return nil
                             }
+
+                            guard let transportType = item.transportType else {
+                                return nil
+                            }
+
+                            guard transportType == "train" || transportType == "suburban" else {
+                                return nil
+                            }
+
                             return Station(code: code, title: item.title)
                         }
                         if !items.isEmpty {
@@ -123,6 +135,7 @@ private struct Settlement: Decodable {
 private struct StationItem: Decodable {
     let title: String
     let codes: Codes?
+    let transportType: String?
 
     struct Codes: Decodable {
         let yandexCode: String?
@@ -130,5 +143,11 @@ private struct StationItem: Decodable {
         enum CodingKeys: String, CodingKey {
             case yandexCode = "yandex_code"
         }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case title
+        case codes
+        case transportType = "transport_type"
     }
 }
