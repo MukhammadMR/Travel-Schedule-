@@ -4,57 +4,35 @@ enum FieldType { case from, to }
 
 // MARK: - Main Screen View
 struct MainScreenView: View {
-    @State private var fromCity: String = ""
-    @State private var toCity: String = ""
-    @State private var fromCode: String = ""
-    @State private var toCode: String = ""
-    @State private var selectedTab = 0
-    @State private var isCityListPresented = false
-    @State private var selectedField: FieldType? = nil
-    @State private var isCarriersPresented = false
-    @State private var isStoryPresented = false
-    @State private var selectedStoryIndex: Int = 0
-    @State private var viewedStories: Set<String> = []
-
-    private let stories: [StoryPreview] = StoryPreview.mockStories
-    
-    private var isSearchEnabled: Bool {
-        !fromCity.isEmpty && !toCity.isEmpty
-    }
-
-    private func swapDirections() {
-        swap(&fromCity, &toCity)
-        swap(&fromCode, &toCode)
-    }
+    @StateObject private var viewModel = MainScreenViewModel()
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                if selectedTab == 0 {
+                if viewModel.selectedTab == 0 {
                     VStack(spacing: 0) {
-                        StoriesGroupView(stories: stories, viewedStories: viewedStories) { index in
-                            viewedStories.insert(stories[index].id)
-                            selectedStoryIndex = index
-                            isStoryPresented = true
+                        StoriesGroupView(stories: viewModel.stories, viewedStories: viewModel.viewedStories) { index in
+                            viewModel.openStory(at: index)
                         }
                         .padding(.top, 44)
                         .padding(.horizontal, 16)
                         
                         ChoosingDirectionView(
-                            fromCity: $fromCity,
-                            toCity: $toCity,
+                            fromCity: $viewModel.fromCity,
+                            toCity: $viewModel.toCity,
                             onSelectField: { field in
-                                selectedField = field
-                                isCityListPresented = true
+                                viewModel.selectField(field)
                             },
-                            onSwap: swapDirections
+                            onSwap: {
+                                viewModel.swapDirections()
+                            }
                         )
                         .padding(.top, 44)
                         .padding(.horizontal, 16)
 
-                        if isSearchEnabled {
+                        if viewModel.isSearchEnabled {
                             Button(action: {
-                                isCarriersPresented = true
+                                viewModel.isCarriersPresented = true
                             }) {
                                 Text("Найти")
                                     .font(.system(size: 17, weight: .semibold))
@@ -68,41 +46,34 @@ struct MainScreenView: View {
                         
                         Spacer()
                                     
-                        NavigationLink("", isActive: $isCarriersPresented) {
+                        NavigationLink("", isActive: $viewModel.isCarriersPresented) {
                             CarriersListView(
-                                fromTitle: fromCity,
-                                toTitle: toCity,
-                                fromCode: fromCode,
-                                toCode: toCode
+                                fromTitle: viewModel.fromCity,
+                                toTitle: viewModel.toCity,
+                                fromCode: viewModel.fromCode,
+                                toCode: viewModel.toCode
                             )
                         }
                         .hidden()
                     }
-                } else if selectedTab == 1 {
+                } else if viewModel.selectedTab == 1 {
                     SettingsView()
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                CustomTabBar(selectedTab: $selectedTab)
+                CustomTabBar(selectedTab: $viewModel.selectedTab)
             }
             .background(Color(.systemBackground))
-            .fullScreenCover(isPresented: $isStoryPresented) {
+            .fullScreenCover(isPresented: $viewModel.isStoryPresented) {
                 if !fullScreenStories.isEmpty {
-                    let startIndex = min(selectedStoryIndex * 2, fullScreenStories.count - 1)
+                    let startIndex = min(viewModel.selectedStoryIndex * 2, fullScreenStories.count - 1)
                     StoryView(story: fullScreenStories[startIndex])
                 }
             }
-            .fullScreenCover(isPresented: $isCityListPresented) {
+            .fullScreenCover(isPresented: $viewModel.isCityListPresented) {
                 NavigationStack {
                     CityListView { selected in
-                        if selectedField == .from {
-                            fromCity = selected.title
-                            fromCode = selected.code
-                        } else {
-                            toCity = selected.title
-                            toCode = selected.code
-                        }
-                        isCityListPresented = false
+                        viewModel.citySelected(title: selected.title, code: selected.code)
                     }
                 }
             }

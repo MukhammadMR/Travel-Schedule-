@@ -130,7 +130,7 @@ struct CarriersListView: View {
             }
         }
         .task {
-            await viewModel.loadCarriers(from: fromCode, to: toCode)
+            await viewModel.onAppear(from: fromCode, to: toCode)
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)

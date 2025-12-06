@@ -1,6 +1,6 @@
 import Foundation
 
-struct Segment: Decodable {
+struct Segment: Decodable, Sendable {
     let departure: String
     let arrival: String
     let duration: Int

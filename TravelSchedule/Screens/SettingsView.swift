@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @StateObject private var viewModel = SettingsViewModel()
     @AppStorage("isDarkMode") private var isDarkMode = false
 
     var body: some View {
@@ -15,7 +16,7 @@ struct SettingsView: View {
 
                     VStack(spacing: 0) {
                         HStack {
-                            Text(Texts.darkMode)
+                            Text(viewModel.darkModeTitle)
                                 .font(.system(size: 17))
                                 .foregroundColor(.primary)
                             Spacer()
@@ -31,29 +32,29 @@ struct SettingsView: View {
                                 ScrollView {
                                     VStack(alignment: .leading, spacing: 16) {
 
-                                        Text(Texts.offerTitle)
+                                        Text(viewModel.offerTitle)
                                             .font(.system(size: 24, weight: .bold))
 
-                                        Text(Texts.offerIntro)
+                                        Text(viewModel.offerIntro)
                                             .font(.system(size: 17))
                                             .kerning(-0.41)
 
-                                        Text(Texts.termsTitle)
+                                        Text(viewModel.termsTitle)
                                             .font(.system(size: 24, weight: .bold))
 
-                                        Text(Texts.termsText)
+                                        Text(viewModel.termsText)
                                             .font(.system(size: 17))
                                             .kerning(-0.41)
                                     }
                                     .padding(.horizontal, 16)
                                     .padding(.top, 16)
                                 }
-                                .navigationTitle(Texts.userAgreement)
+                                .navigationTitle(viewModel.userAgreementTitle)
                                 .navigationBarTitleDisplayMode(.inline)
                             }
                         } label: {
                             HStack {
-                                Text(Texts.userAgreement)
+                                Text(viewModel.userAgreementTitle)
                                     .font(.system(size: 17))
                                     .foregroundColor(.primary)
                                 Spacer()
@@ -75,10 +76,10 @@ struct SettingsView: View {
                         .frame(height: 0)
 
                     VStack(spacing: 4) {
-                        Text("Приложение использует API «Яндекс.Расписаний»")
+                        Text(viewModel.apiInfoText)
                             .font(.system(size: 13))
                             .foregroundColor(.gray)
-                        Text("Версия 1.0 (beta)")
+                        Text(viewModel.versionText)
                             .font(.system(size: 13))
                             .foregroundColor(.gray)
                     }
@@ -88,36 +89,6 @@ struct SettingsView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
         }
-    }
-}
-
-private extension SettingsView {
-    enum Texts {
-        static let darkMode = "Темная тема"
-        static let userAgreement = "Пользовательское соглашение"
-
-        static let offerTitle = """
-        Оферта на оказание образовательных услуг дополнительного образования Яндекс.Практикум
-        для физических лиц
-        """
-
-        static let offerIntro = """
-        Данный документ является действующим, если расположен по адресу: https://yandex.ru/legal/practicum_offer
-
-        Российская Федерация, город Москва
-        """
-
-        static let termsTitle = "1. ТЕРМИНЫ"
-
-        static let termsText = """
-        Понятия, используемые в Оферте, означают следующее:
-
-        Авторизованные адреса — адреса электронной почты каждой Стороны. Авторизованным адресом Исполнителя является адрес электронной почты, указанный в разделе 11 Оферты. Авторизованным адресом Студента является адрес электронной почты, указанный Студентом в Личном кабинете.
-
-        Вводный курс — начальный Курс обучения по представленным на Сервисе Программам обучения в рамках выбранной Студентом Профессии или Курсу, рассчитанный на определенное количество часов самостоятельного обучения, который предоставляется Студенту единожды при регистрации на Сервисе на безвозмездной основе. В процессе обучения Студент знакомится с работой Сервиса и определяет возможность продолжения обучения в рамках Полного курса.
-
-        Максимальный срок освоения Вводного курса составляет 1 (один) год с даты начала обучения.
-        """
     }
 }
 

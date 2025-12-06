@@ -1,6 +1,6 @@
 import Foundation
 
-struct CarrierDetailsDTO: Decodable {
+struct CarrierDetailsDTO: Decodable, Sendable {
     let title: String?
     let logo: String?
     let phone: String?

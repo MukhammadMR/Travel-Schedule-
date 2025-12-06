@@ -1,6 +1,6 @@
 import Foundation
 
-struct CarrierInfo: Decodable, CustomStringConvertible {
+struct CarrierInfo: Decodable, CustomStringConvertible, Sendable {
     let title: String
     let logo: String?
     let email: String?
